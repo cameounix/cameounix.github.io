@@ -3,404 +3,1196 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>BillSnap — AI Powered Expense Tracking</title>
-
-  <meta
-    name="description"
-    content="BillSnap helps you scan invoices, track expenses, analyze spending, and manage your financial life using AI-powered bill extraction."
-  />
-
+  <title>BillSnap — Money Expense Tracker</title>
+  <meta name="description" content="Track expenses, scan receipts, set budgets, and understand your spending — all on your phone, completely offline." />
+  <meta name="keywords" content="expense tracker, bill scanner, budget app, money manager, BillSnap, offline finance" />
+  <meta name="author" content="Cameo Unix" />
+  <meta property="og:title" content="BillSnap — Money Expense Tracker" />
+  <meta property="og:description" content="Track every rupee. Offline. Private. Free." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="app_icon.png" type="image/png" />
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+/* ── 1. Variables ──────────────────────────────────────────── */
+:root {
+  --ground:     #FAFAFF;
+  --ground-alt: #F0EFFE;
+  --ground-dk:  #0D0A2B;
+  --white:      #FFFFFF;
+  --text:       #1A1744;
+  --text-mid:   #4A4580;
+  --text-soft:  #7B78A8;
+  --border:     #E0DDFA;
+  --accent:     #4F46E5;
+  --accent-2:   #7C3AED;
+  --warm:       #D97706;
+  --grad:       linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%);
+  --grad-3:     linear-gradient(135deg,#4F46E5 0%,#7C3AED 55%,#2563EB 100%);
+  --sh-sm:      0 2px 12px rgba(79,70,229,.08);
+  --sh-md:      0 8px 32px rgba(79,70,229,.14);
+  --sh-lg:      0 24px 64px rgba(79,70,229,.20);
+  --r-s: 10px; --r-m: 18px; --r-l: 26px; --r-xl: 42px;
+  --f-display: Georgia,'Palatino Linotype',Palatino,serif;
+  --f-body:    -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --f-mono:    'SF Mono','Consolas','Courier New',monospace;
+}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
-      line-height: 1.6;
-    }
+/* ── 2. Reset ─────────────────────────────────────────────── */
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:var(--f-body); background:var(--ground); color:var(--text); line-height:1.6; overflow-x:hidden; }
+a { text-decoration:none; color:inherit; }
+img { max-width:100%; display:block; }
+button { font-family:inherit; border:none; background:none; cursor:pointer; }
+ul { list-style:none; }
 
-    a {
-      text-decoration: none;
-    }
+/* ── 3. Typography ────────────────────────────────────────── */
+h1,h2 { font-family:var(--f-display); line-height:1.08; letter-spacing:-0.024em; }
+h3,h4 { font-family:var(--f-body); font-weight:700; line-height:1.3; }
 
-    .container {
-      width: 90%;
-      max-width: 1180px;
-      margin: auto;
-    }
+/* ── 4. Layout utilities ──────────────────────────────────── */
+.wrap  { width:min(92%,1120px); margin:0 auto; }
+.sec   { padding:96px 0; }
+.sec-s { padding:72px 0; }
 
-    header {
-      padding: 24px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(12px);
-      background: rgba(15, 23, 42, 0.9);
-      z-index: 100;
-    }
+.grad-text {
+  background:var(--grad);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.eyebrow {
+  display:inline-block;
+  font-size:11px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase;
+  color:var(--accent); margin-bottom:14px;
+  font-family:var(--f-body);
+}
 
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+/* ── 5. Buttons ───────────────────────────────────────────── */
+.btn {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:14px 28px; border-radius:100px;
+  font-size:15px; font-weight:700; line-height:1;
+  cursor:pointer; transition:transform .2s,box-shadow .2s;
+  white-space:nowrap; font-family:var(--f-body);
+}
+.btn:hover { transform:translateY(-2px); }
+.btn:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
 
-    .logo {
-      font-size: 28px;
-      font-weight: 700;
-      color: #ffffff;
-    }
+.btn-p { background:var(--grad-3); color:#fff; box-shadow:0 4px 20px rgba(79,70,229,.35); }
+.btn-p:hover { box-shadow:0 8px 32px rgba(79,70,229,.45); }
 
-    .logo span {
-      color: #60a5fa;
-    }
+.btn-g { background:transparent; color:var(--accent); border:2px solid var(--border); }
+.btn-g:hover { border-color:var(--accent); background:var(--ground-alt); }
 
-    .nav-links {
-      display: flex;
-      gap: 20px;
-    }
+/* ── 6. Header ────────────────────────────────────────────── */
+#hdr {
+  position:sticky; top:0; z-index:100;
+  background:rgba(250,250,255,.92);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:box-shadow .3s;
+}
+#hdr.raised { box-shadow:var(--sh-sm); }
 
-    .nav-links a {
-      color: #cbd5e1;
-      font-size: 15px;
-      transition: 0.3s;
-    }
+.nav {
+  display:flex; align-items:center; gap:32px; padding:14px 0;
+}
+.logo {
+  display:flex; align-items:center; gap:11px; flex-shrink:0;
+}
+.logo img { width:40px; height:40px; border-radius:11px; box-shadow:0 2px 8px rgba(79,70,229,.18); }
+.logo-name {
+  font-family:var(--f-body); font-size:18px; font-weight:800;
+  background:var(--grad); -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent; background-clip:text;
+  line-height:1;
+}
+.logo-sub { font-size:11px; color:var(--text-soft); margin-top:2px; }
 
-    .nav-links a:hover {
-      color: white;
-    }
+.nav-links {
+  display:flex; align-items:center; gap:26px; margin-left:auto;
+}
+.nav-links a { font-size:14px; font-weight:600; color:var(--text-mid); transition:color .2s; }
+.nav-links a:hover { color:var(--accent); }
+.nav-cta { margin-left:8px; }
 
-    .hero {
-      padding: 100px 0 80px;
-      text-align: center;
-    }
+.burger {
+  display:none; flex-direction:column; gap:5px;
+  margin-left:auto; padding:4px;
+}
+.burger span { width:22px; height:2px; background:var(--text); border-radius:2px; display:block; }
 
-    .hero h1 {
-      font-size: 64px;
-      line-height: 1.1;
-      margin-bottom: 24px;
-    }
+/* ── 7. Mobile nav ────────────────────────────────────────── */
+.mnav {
+  display:none; position:fixed; inset:0;
+  background:var(--ground); z-index:200;
+  flex-direction:column; align-items:center; justify-content:center; gap:28px;
+}
+.mnav.open { display:flex; }
+.mnav a { font-size:22px; font-weight:700; color:var(--text); }
+.mnav a:hover { color:var(--accent); }
+.mnav-close {
+  position:absolute; top:18px; right:18px;
+  width:42px; height:42px; background:var(--ground-alt);
+  border-radius:var(--r-s); font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+}
 
-    .hero h1 span {
-      color: #60a5fa;
-    }
+/* ── 8. Hero ──────────────────────────────────────────────── */
+#hero {
+  background:var(--ground);
+  padding:80px 0 100px;
+  position:relative; overflow:hidden;
+}
+#hero::before {
+  content:''; position:absolute;
+  top:-100px; right:-100px;
+  width:600px; height:600px;
+  background:radial-gradient(circle,rgba(124,58,237,.10) 0%,transparent 70%);
+  pointer-events:none;
+}
 
-    .hero p {
-      max-width: 780px;
-      margin: auto;
-      color: #94a3b8;
-      font-size: 20px;
-    }
+.hero-grid {
+  display:grid; grid-template-columns:1fr auto;
+  gap:72px; align-items:center; position:relative;
+}
 
-    .hero-buttons {
-      margin-top: 40px;
-      display: flex;
-      justify-content: center;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:10px;
+  background:var(--ground-alt); border:1px solid var(--border);
+  border-radius:100px; padding:8px 16px 8px 10px; margin-bottom:30px;
+}
+.hero-badge img { width:26px; height:26px; border-radius:7px; flex-shrink:0; }
+.hero-badge span { font-size:13px; font-weight:700; color:var(--text-mid); }
+.live-dot {
+  width:8px; height:8px; background:#22C55E;
+  border-radius:50%; flex-shrink:0;
+  animation:livepulse 2s ease-in-out infinite;
+}
+@keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-    .btn {
-      padding: 14px 24px;
-      border-radius: 14px;
-      font-weight: 600;
-      transition: 0.3s;
-    }
+.hero-h1 {
+  font-size:clamp(32px,4.8vw,62px); font-weight:bold;
+  color:var(--text); margin-bottom:16px;
+}
 
-    .btn-primary {
-      background: #3b82f6;
-      color: white;
-    }
+.hero-cta-group {
+  display:inline-flex; flex-direction:column; align-items:center; gap:0;
+}
+.hero-icon {
+  margin:20px 0 24px;
+}
+.hero-icon img {
+  border-radius:28px;
+  box-shadow:0 10px 40px rgba(79,70,229,.26), 0 3px 10px rgba(79,70,229,.14);
+}
 
-    .btn-primary:hover {
-      background: #2563eb;
-    }
+.hero-sub {
+  font-size:15px; color:var(--text-mid);
+  line-height:1.7; max-width:460px; margin-bottom:32px;
+}
 
-    .btn-secondary {
-      border: 1px solid rgba(255,255,255,0.12);
-      color: white;
-    }
+.hero-btns { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:52px; }
 
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.06);
-    }
+.hero-stats {
+  display:flex; gap:40px;
+  padding-top:28px; border-top:1px solid var(--border);
+}
+.stat-val {
+  font-family:var(--f-display);
+  font-size:28px; font-weight:bold; color:var(--accent); line-height:1;
+}
+.stat-val.warm { color:var(--warm); }
+.stat-lbl { font-size:12px; color:var(--text-soft); margin-top:3px; }
 
-    .section {
-      padding: 90px 0;
-    }
+/* Hero phone */
+.hero-phone-outer {
+  flex-shrink:0; position:relative;
+}
+.hero-phone-outer::before {
+  content:''; position:absolute; inset:-48px;
+  background:radial-gradient(ellipse,rgba(79,70,229,.13) 0%,transparent 68%);
+  border-radius:50%; pointer-events:none;
+}
 
-    .section-title {
-      text-align: center;
-      margin-bottom: 60px;
-    }
+.h-phone {
+  width:238px; height:474px;
+  background:var(--text); border-radius:46px; padding:10px;
+  box-shadow:var(--sh-lg),0 0 0 1px rgba(255,255,255,.06);
+  position:relative;
+  animation:float 5s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+@media (prefers-reduced-motion:reduce) { .h-phone{animation:none} }
 
-    .section-title h2 {
-      font-size: 42px;
-      margin-bottom: 12px;
-    }
+.h-phone::after {
+  content:''; position:absolute;
+  top:10px; left:50%; transform:translateX(-50%);
+  width:70px; height:20px;
+  background:#06041a; border-radius:0 0 13px 13px; z-index:2;
+}
+.h-screen {
+  width:100%; height:100%;
+  background:var(--ground); border-radius:37px;
+  overflow:hidden; display:flex; flex-direction:column;
+}
+.hs-top {
+  background:var(--grad-3); padding:32px 13px 14px; color:#fff; flex-shrink:0;
+}
+.hs-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.hs-greet { font-size:9px; opacity:.75; }
+.hs-name  { font-size:12px; font-weight:700; }
+.hs-av {
+  width:26px; height:26px; background:rgba(255,255,255,.18);
+  border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px;
+}
+.hs-lbl  { font-size:8px; opacity:.7; margin-bottom:2px; }
+.hs-amt  { font-family:var(--f-mono); font-size:24px; font-weight:bold; letter-spacing:-.02em; }
 
-    .section-title p {
-      color: #94a3b8;
-      max-width: 700px;
-      margin: auto;
-    }
+.hs-body { flex:1; padding:11px; overflow:hidden; }
+.hs-stitle { font-size:9px; font-weight:700; color:var(--text); margin-bottom:7px; }
+.hs-txn {
+  display:flex; align-items:center; gap:8px;
+  padding:6px 0; border-bottom:1px solid var(--border);
+}
+.hs-ico {
+  width:26px; height:26px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0;
+}
+.hs-inf { flex:1; min-width:0; }
+.hs-tname { font-size:9px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hs-tdate { font-size:8px; color:var(--text-soft); }
+.hs-tamt  { font-family:var(--f-mono); font-size:10px; font-weight:700; color:#EF4444; flex-shrink:0; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
+/* ── 9. Carousel ──────────────────────────────────────────── */
+#preview { background:var(--ground-alt); padding:96px 0; }
 
-    .card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      padding: 28px;
-      transition: 0.3s;
-    }
+.prev-head { text-align:center; margin-bottom:60px; }
+.prev-head h2 { font-size:clamp(28px,3.8vw,46px); margin-bottom:12px; }
+.prev-head p  { font-size:17px; color:var(--text-mid); max-width:440px; margin:0 auto; }
 
-    .card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(96,165,250,0.4);
-    }
+.c-stage { display:flex; flex-direction:column; align-items:center; gap:28px; }
 
-    .card h3 {
-      margin-bottom: 12px;
-      font-size: 22px;
-    }
+.c-phone {
+  width:258px; height:514px;
+  background:var(--text); border-radius:50px; padding:11px;
+  box-shadow:var(--sh-lg);
+  position:relative; flex-shrink:0;
+}
+.c-phone::after {
+  content:''; position:absolute;
+  top:11px; left:50%; transform:translateX(-50%);
+  width:74px; height:20px;
+  background:#06041a; border-radius:0 0 13px 13px; z-index:2;
+}
+.c-screen {
+  width:100%; height:100%;
+  background:var(--ground); border-radius:40px;
+  overflow:hidden; position:relative;
+}
 
-    .card p {
-      color: #94a3b8;
-    }
+/* All slides share same container — fade in/out */
+.app-s {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  opacity:0; transition:opacity .4s ease; pointer-events:none;
+}
+.app-s.on { opacity:1; pointer-events:auto; }
 
-    .workflow {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 18px;
-      margin-top: 40px;
-    }
+/* Topbar shared style */
+.s-top {
+  background:var(--grad-3); padding:30px 13px 13px;
+  color:#fff; flex-shrink:0;
+}
+.s-top-row { display:flex; justify-content:space-between; align-items:center; }
+.s-title { font-size:13px; font-weight:700; }
+.s-sub   { font-size:9px; opacity:.7; margin-top:2px; }
 
-    .workflow-step {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 18px 24px;
-      border-radius: 14px;
-      color: #e2e8f0;
-      font-weight: 600;
-    }
+/* Shared body */
+.s-body { flex:1; overflow:hidden; padding:11px; }
+.s-sec { font-size:9px; font-weight:700; color:var(--text); margin-bottom:7px; }
 
-    .about-box {
-      background: linear-gradient(
-        135deg,
-        rgba(59,130,246,0.12),
-        rgba(14,165,233,0.08)
-      );
-      border: 1px solid rgba(96,165,250,0.18);
-      border-radius: 30px;
-      padding: 50px;
-      text-align: center;
-    }
+/* Screen 1 — Home (reuses hs-* classes defined above) */
 
-    .about-box p {
-      color: #cbd5e1;
-      max-width: 850px;
-      margin: auto;
-      font-size: 18px;
-    }
+/* Screen 2 — Add Transaction */
+.f-lbl { font-size:7px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-soft); margin-bottom:2px; margin-top:7px; }
+.f-box {
+  background:var(--white); border:1.5px solid var(--border);
+  border-radius:var(--r-s); padding:6px 9px;
+  font-size:9px; color:var(--text); font-weight:600; width:100%;
+}
+.f-box.f-amt {
+  font-family:var(--f-mono); font-size:15px; font-weight:bold;
+  color:var(--accent); border-color:var(--accent); padding:7px 9px;
+}
+.cat-row { display:flex; gap:5px; flex-wrap:wrap; margin-top:5px; }
+.cat-chip {
+  font-size:8px; font-weight:600; padding:3px 8px; border-radius:100px;
+  background:var(--ground-alt); color:var(--text-mid);
+}
+.cat-chip.sel { background:var(--accent); color:#fff; }
+.save-btn {
+  margin-top:9px; padding:8px; width:100%;
+  background:var(--grad-3); border-radius:var(--r-s);
+  text-align:center; color:#fff; font-size:10px; font-weight:700;
+}
 
-    footer {
-      padding: 50px 0;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      text-align: center;
-      color: #94a3b8;
-    }
+/* Screen 3 — Instant */
+.ins-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:6px; }
+.ins-tile {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r-s); padding:9px; text-align:center;
+}
+.ins-ico { font-size:17px; margin-bottom:3px; }
+.ins-nm  { font-size:8px; font-weight:600; color:var(--text); }
+.ins-amt { font-family:var(--f-mono); font-size:9px; font-weight:700; color:var(--accent); margin-top:1px; }
 
-    footer a {
-      color: #60a5fa;
-    }
+/* Screen 4 — Analytics */
+.donut-wrap { display:flex; justify-content:center; margin:8px 0 6px; }
+.donut-svg  { width:78px; height:78px; }
+.leg-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.leg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.leg-nm  { font-size:8px; color:var(--text-mid); flex:1; }
+.leg-amt { font-family:var(--f-mono); font-size:8px; font-weight:700; color:var(--text); }
 
-    @media (max-width: 768px) {
-      .hero h1 {
-        font-size: 42px;
-      }
+/* Screen 5 — Budget */
+.bud-item { margin-bottom:9px; }
+.bud-row  { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
+.bud-cat  { font-size:8px; font-weight:600; color:var(--text); }
+.bud-num  { font-family:var(--f-mono); font-size:7px; color:var(--text-soft); }
+.bud-track { height:5px; background:var(--ground-alt); border-radius:3px; overflow:hidden; }
+.bud-fill  { height:100%; border-radius:3px; }
 
-      .section-title h2 {
-        font-size: 32px;
-      }
+/* Nav below carousel */
+.c-label { text-align:center; font-size:14px; font-weight:700; color:var(--text-mid); min-height:22px; }
+.c-dots  { display:flex; gap:8px; justify-content:center; }
+.c-dot   {
+  width:8px; height:8px; border-radius:100px;
+  background:var(--border); cursor:pointer;
+  transition:width .3s,background .3s; border:none;
+}
+.c-dot.on { width:28px; background:var(--accent); }
 
-      .hero p {
-        font-size: 18px;
-      }
+/* ── 10. Features bento ───────────────────────────────────── */
+#features { background:var(--white); padding:96px 0; }
 
-      .about-box {
-        padding: 32px;
-      }
+.feat-head { text-align:center; margin-bottom:56px; }
+.feat-head h2 { font-size:clamp(28px,3.8vw,48px); margin-bottom:12px; }
+.feat-head p  { font-size:17px; color:var(--text-mid); max-width:500px; margin:0 auto; }
 
-      .nav-links {
-        display: none;
-      }
-    }
+.bento {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+/* grid placement */
+.b1 { grid-column:1/3; }
+.b2 { grid-column:3; grid-row:1/3; }
+.b3 { grid-column:1; }
+.b4 { grid-column:2; }
+.b5 { grid-column:1/3; }
+.b6 { grid-column:3; }
+
+.bc {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r-l); padding:30px;
+  transition:transform .25s,box-shadow .25s; position:relative; overflow:hidden;
+}
+.bc:hover { transform:translateY(-5px); box-shadow:var(--sh-md); }
+
+/* b1 wide: subtle tint + receipt tags */
+.b1 { background:linear-gradient(140deg,var(--white) 0%,#EEEEFF 100%); }
+/* b2 tall: inverted dark */
+.b2 {
+  background:linear-gradient(160deg,#1A1744 0%,#2D1B69 100%);
+  color:var(--white);
+}
+.b2 .bc-title { color:var(--white); }
+.b2 .bc-desc  { color:rgba(255,255,255,.6); }
+.b2 .bc-ico   { background:rgba(255,255,255,.12); }
+/* b5 wide: mirror tint */
+.b5 { background:linear-gradient(140deg,#EEEEFF 0%,var(--white) 100%); }
+
+.bc-ico {
+  width:50px; height:50px; background:var(--ground-alt);
+  border-radius:14px; display:flex; align-items:center; justify-content:center;
+  font-size:23px; margin-bottom:18px;
+  transition:transform .25s;
+}
+.bc:hover .bc-ico { transform:scale(1.1) rotate(-5deg); }
+
+.bc-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px; }
+.bc-desc  { font-size:14px; color:var(--text-mid); line-height:1.65; }
+
+/* Receipt tags inside b1 */
+.rtags { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+.rtag {
+  background:rgba(79,70,229,.08); border:1px solid rgba(79,70,229,.15);
+  border-radius:var(--r-s); padding:5px 11px;
+  font-size:11px; font-weight:600; color:var(--accent);
+  display:flex; align-items:center; gap:5px;
+  font-family:var(--f-mono);
+}
+
+/* Canvas donut inside b2 */
+.bento-donut { margin-top:20px; display:flex; justify-content:center; }
+
+/* ── 11. Why BillSnap ─────────────────────────────────────── */
+#why { background:var(--ground-alt); padding:96px 0; }
+
+.why-grid { display:grid; grid-template-columns:1fr 1fr; gap:88px; align-items:center; }
+
+.why-left h2 { font-size:clamp(28px,3.8vw,48px); margin-bottom:14px; }
+.why-sub { font-size:17px; color:var(--text-mid); line-height:1.75; margin-bottom:44px; max-width:440px; }
+
+.why-list { display:flex; flex-direction:column; gap:22px; }
+.why-item { display:flex; align-items:flex-start; gap:15px; }
+.why-ck {
+  width:34px; height:34px; flex-shrink:0;
+  background:var(--grad); border-radius:var(--r-s);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:bold; font-size:15px;
+}
+.why-t  { font-size:15px; font-weight:700; margin-bottom:2px; }
+.why-d  { font-size:13px; color:var(--text-mid); }
+
+/* Stacked cards visual */
+.stk { position:relative; width:290px; height:340px; margin:0 auto; }
+.scard {
+  position:absolute; width:256px;
+  background:var(--white); border-radius:var(--r-l);
+  padding:22px; box-shadow:var(--sh-md);
+}
+.scard-1 { top:0; left:0; transform:rotate(-7deg); border-top:4px solid var(--accent-2); }
+.scard-2 { top:28px; left:16px; transform:rotate(4deg); border-top:4px solid var(--accent); }
+.scard-3 { top:60px; left:6px; z-index:3; border-top:4px solid var(--warm); }
+
+.sc-lbl { font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-soft); margin-bottom:6px; }
+.sc-amt {
+  font-family:var(--f-display); font-size:30px; font-weight:bold;
+  background:var(--grad); -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent; background-clip:text;
+}
+.sc-sub  { font-size:11px; color:var(--text-soft); margin-top:2px; }
+.sc-bars { margin-top:14px; display:flex; flex-direction:column; gap:7px; }
+.sc-brow { display:flex; align-items:center; gap:8px; }
+.sc-blbl { font-size:10px; color:var(--text-mid); width:56px; flex-shrink:0; }
+.sc-btrk { flex:1; height:5px; background:var(--ground-alt); border-radius:3px; overflow:hidden; }
+.sc-bfil { height:100%; border-radius:3px; }
+
+/* ── 12. Download CTA ─────────────────────────────────────── */
+#dl {
+  background:var(--ground-dk);
+  padding:96px 0; text-align:center;
+  position:relative; overflow:hidden;
+}
+#dl::before {
+  content:''; position:absolute; inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:26px 26px; pointer-events:none;
+}
+
+#dl h2 {
+  font-size:clamp(32px,5vw,62px); font-weight:bold;
+  color:#fff; margin-bottom:14px; position:relative;
+}
+#dl h2 .warm { color:var(--warm); }
+#dl .dl-sub {
+  font-size:18px; color:rgba(255,255,255,.6);
+  max-width:420px; margin:0 auto 48px; position:relative;
+  line-height:1.7;
+}
+
+.play-badge {
+  display:inline-flex; align-items:center; gap:15px;
+  background:var(--white); color:var(--ground-dk);
+  padding:16px 32px; border-radius:16px;
+  font-family:var(--f-body); font-weight:700;
+  box-shadow:0 6px 28px rgba(0,0,0,.28);
+  transition:transform .2s,box-shadow .2s;
+  position:relative; cursor:pointer; border:none;
+}
+.play-badge:hover { transform:translateY(-3px); box-shadow:0 14px 44px rgba(0,0,0,.38); }
+.play-badge:focus-visible { outline:3px solid var(--warm); outline-offset:4px; }
+.play-badge svg { width:30px; height:30px; flex-shrink:0; }
+.pb-sub  { font-size:11px; opacity:.55; display:block; line-height:1; }
+.pb-main { font-size:20px; display:block; line-height:1.3; }
+.dl-note { display:block; color:rgba(255,255,255,.38); font-size:12px; margin-top:18px; position:relative; }
+
+/* ── 13. Footer ───────────────────────────────────────────── */
+footer { background:#07051a; color:rgba(255,255,255,.55); padding:56px 0 32px; }
+
+.ft-grid {
+  display:grid; grid-template-columns:1.4fr 1fr 1fr;
+  gap:48px; margin-bottom:44px;
+}
+.ft-brand .logo-name { font-size:20px; }
+.ft-brand .logo-sub  { color:rgba(255,255,255,.3); }
+.ft-brand p { font-size:14px; color:rgba(255,255,255,.4); margin-top:14px; line-height:1.7; max-width:240px; }
+.ft-brand .dev { margin-top:10px; font-size:13px; }
+.ft-brand .dev strong { color:rgba(255,255,255,.7); }
+
+.ft-col h4 {
+  font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  color:rgba(255,255,255,.3); margin-bottom:14px;
+}
+.ft-col li { margin-bottom:9px; }
+.ft-col a { font-size:14px; color:rgba(255,255,255,.5); transition:color .2s; }
+.ft-col a:hover { color:#fff; }
+
+.ft-bottom {
+  border-top:1px solid rgba(255,255,255,.07);
+  padding-top:26px; display:flex;
+  justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:10px; font-size:13px;
+}
+
+/* ── 14. Reveal animation ─────────────────────────────────── */
+.rv { opacity:0; transform:translateY(22px); transition:opacity .55s ease,transform .55s ease; }
+.rv.vis { opacity:1; transform:none; }
+@media (prefers-reduced-motion:reduce) {
+  .rv { opacity:1; transform:none; transition:none; }
+  .h-phone,.hero-phone-outer::before { animation:none; }
+}
+
+/* ── 15. Responsive ───────────────────────────────────────── */
+@media (max-width:1060px) {
+  .bento { grid-template-columns:1fr 1fr; }
+  .b1 { grid-column:1/3; grid-row:auto; }
+  .b2 { grid-column:2; grid-row:2/4; }
+  .b3 { grid-column:1; grid-row:2; }
+  .b4 { grid-column:1; grid-row:3; }
+  .b5 { grid-column:1/3; grid-row:auto; }
+  .b6 { grid-column:1/3; grid-row:auto; }
+}
+
+@media (max-width:860px) {
+  .hero-grid    { grid-template-columns:1fr; }
+  .hero-phone-outer { display:none; }
+  .why-grid     { grid-template-columns:1fr; gap:48px; }
+  .stk          { display:none; }
+  .ft-grid      { grid-template-columns:1fr 1fr; }
+}
+
+@media (max-width:768px) {
+  .sec,.sec-s   { padding:64px 0; }
+  .nav-links,.nav-cta { display:none; }
+  .burger       { display:flex; }
+  .hero-stats   { gap:24px; }
+  .hero-btns    { flex-direction:column; align-items:center; }
+  .hero-cta-group { display:flex; width:100%; align-items:center; }
+  #features     { padding:64px 0; }
+  #why          { padding:64px 0; }
+  #dl           { padding:64px 0; }
+}
+
+@media (max-width:600px) {
+  .bento { grid-template-columns:1fr; }
+  .b1,.b2,.b3,.b4,.b5,.b6 { grid-column:1; grid-row:auto; }
+  .b2 { background:linear-gradient(160deg,#1A1744 0%,#2D1B69 100%); }
+  .bento-donut { display:none; }
+  .ft-grid { grid-template-columns:1fr; gap:28px; }
+}
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="container nav">
-      <div class="logo">Bill<span>Snap</span></div>
+<!-- ── Mobile nav overlay ───────────────────────────────────── -->
+<div class="mnav" id="mnav" role="dialog" aria-modal="true" aria-label="Navigation">
+  <button class="mnav-close" onclick="toggleMnav()" aria-label="Close menu">✕</button>
+  <a href="#features" onclick="toggleMnav()">Features</a>
+  <a href="#preview"  onclick="toggleMnav()">Preview</a>
+  <a href="#why"      onclick="toggleMnav()">Why BillSnap</a>
+  <a href="#dl"       onclick="toggleMnav()">Download</a>
+  <a href="README.md" onclick="toggleMnav()">Privacy Policy</a>
+</div>
 
-      <div class="nav-links">
-        <a href="#features">Features</a>
-        <a href="#workflow">Workflow</a>
-        <a href="#about">About</a>
-        <a href="/README.md">Privacy Policy</a>
+<!-- ── Header ──────────────────────────────────────────────── -->
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="#" class="logo" aria-label="BillSnap home">
+      <img src="app_icon.png" alt="BillSnap icon" width="40" height="40" />
+      <div>
+        <div class="logo-name">BillSnap</div>
+        <div class="logo-sub">Money Expense Tracker</div>
       </div>
+    </a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="#features">Features</a>
+      <a href="#preview">Preview</a>
+      <a href="#why">Why BillSnap</a>
+      <a href="#dl">Download</a>
+      <a href="README.md">Privacy</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://play.google.com/store/apps/details?id=com.cameounix.billsnap"
+         target="_blank" rel="noopener" class="btn btn-p" style="padding:10px 20px;font-size:13px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <polygon points="2,1 2,12 12.5,12" fill="#4285F4"/>
+          <polygon points="2,1 22,12 12.5,12" fill="#34A853"/>
+          <polygon points="12.5,12 22,12 2,23" fill="#FBBC04"/>
+          <polygon points="2,12 12.5,12 2,23" fill="#EA4335"/>
+        </svg>
+        Get the App
+      </a>
     </div>
-  </header>
+    <button class="burger" onclick="toggleMnav()" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
 
-  <section class="hero">
-    <div class="container">
-      <h1>
-        Smart Expense Tracking
-        <br />
-        Powered by <span>AI</span>
-      </h1>
+<!-- ── Hero ────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-grid">
 
-      <p>
-        BillSnap helps users scan invoices, extract expense data,
-        track spending, analyze trends, and manage financial life
-        intelligently using AI-powered bill processing.
-      </p>
+      <div class="hero-content">
+        <h1 class="hero-h1 rv">
+          Manage Your<br />
+          Expenses <span class="grad-text">Smarter.</span>
+        </h1>
 
-      <div class="hero-buttons">
-        <a href="#" class="btn btn-primary">Coming Soon on Play Store</a>
-        <a href="/README.md" class="btn btn-secondary">
-          Privacy Policy
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="features">
-    <div class="container">
-
-      <div class="section-title">
-        <h2>Core Features</h2>
-        <p>
-          Built to simplify invoice management and personal expense tracking.
-        </p>
-      </div>
-
-      <div class="grid">
-
-        <div class="card">
-          <h3>AI Invoice Scanning</h3>
-          <p>
-            Upload invoices and automatically extract vendor,
-            amount, items, and payment details using AI.
-          </p>
-        </div>
-
-        <div class="card">
-          <h3>Expense Analytics</h3>
-          <p>
-            Understand monthly spending trends, categories,
-            payment methods, and financial behavior.
-          </p>
-        </div>
-
-        <div class="card">
-          <h3>Smart Categorization</h3>
-          <p>
-            Automatically classify bills into categories like
-            food, travel, shopping, utilities, and more.
-          </p>
-        </div>
-
-        <div class="card">
-          <h3>Cloud Ready</h3>
-          <p>
-            Designed for scalable backend infrastructure with
-            secure cloud synchronization and backups.
-          </p>
-        </div>
-
-        <div class="card">
-          <h3>Budget Insights</h3>
-          <p>
-            Monitor expenses, detect overspending patterns,
-            and improve financial discipline.
-          </p>
-        </div>
-
-        <div class="card">
-          <h3>AI Powered Future</h3>
-          <p>
-            Future versions will include personalized financial
-            recommendations and predictive insights.
-          </p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="workflow">
-    <div class="container">
-
-      <div class="section-title">
-        <h2>How BillSnap Works</h2>
-        <p>
-          A streamlined AI-driven invoice processing workflow.
-        </p>
-      </div>
-
-      <div class="workflow">
-        <div class="workflow-step">Upload Bill</div>
-        <div class="workflow-step">OCR Extraction</div>
-        <div class="workflow-step">AI Processing</div>
-        <div class="workflow-step">Expense Analysis</div>
-        <div class="workflow-step">Smart Insights</div>
-      </div>
-
-    </div>
-  </section>
-
-  <section class="section" id="about">
-    <div class="container">
-
-      <div class="about-box">
-
-        <div class="section-title">
-          <h2>About BillSnap</h2>
-        </div>
-
-        <p>
-          BillSnap is an AI-powered expense management platform
-          focused on simplifying financial tracking for everyday users.
-          Our mission is to automate invoice processing, provide
-          meaningful financial insights, and help users better
-          understand their spending habits through intelligent technology.
+        <p class="hero-sub rv">
+          Track expenses, scan receipts, set budgets, and stay in
+          control of your money — offline, private, no login required.
         </p>
 
+        <div class="hero-cta-group rv">
+          <div class="hero-icon">
+            <img src="app_icon.png" alt="BillSnap app icon" width="160" height="160" />
+          </div>
+          <div class="hero-btns">
+            <a href="https://play.google.com/store/apps/details?id=com.cameounix.billsnap"
+               target="_blank" rel="noopener" class="btn btn-p">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                <polygon points="2,1 2,12 12.5,12" fill="#4285F4"/>
+                <polygon points="2,1 22,12 12.5,12" fill="#34A853"/>
+                <polygon points="12.5,12 22,12 2,23" fill="#FBBC04"/>
+                <polygon points="2,12 12.5,12 2,23" fill="#EA4335"/>
+              </svg>
+              Download on Google Play
+            </a>
+            <a href="#features" class="btn btn-g">Learn More</a>
+          </div>
+        </div>
+
+        <div class="hero-stats rv">
+          <div>
+            <div class="stat-val">100%</div>
+            <div class="stat-lbl">Offline</div>
+          </div>
+          <div>
+            <div class="stat-val warm">Free</div>
+            <div class="stat-lbl">No in-app purchases</div>
+          </div>
+          <div>
+            <div class="stat-val">AI</div>
+            <div class="stat-lbl">Receipt scanning</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero phone -->
+      <div class="hero-phone-outer rv">
+        <div class="h-phone" role="img" aria-label="BillSnap app screenshot showing expense dashboard">
+          <div class="h-screen">
+            <div class="hs-top">
+              <div class="hs-row">
+                <div>
+                  <div class="hs-greet">Good morning 👋</div>
+                  <div class="hs-name">BillSnap</div>
+                </div>
+                <div class="hs-av">😊</div>
+              </div>
+              <div class="hs-lbl">Spent this month</div>
+              <div class="hs-amt">₹12,480</div>
+            </div>
+            <div class="hs-body">
+              <div class="hs-stitle">Recent</div>
+              <div class="hs-txn">
+                <div class="hs-ico" style="background:#FEF3C7;">🍔</div>
+                <div class="hs-inf"><div class="hs-tname">Zomato</div><div class="hs-tdate">Today</div></div>
+                <div class="hs-tamt">−₹340</div>
+              </div>
+              <div class="hs-txn">
+                <div class="hs-ico" style="background:#DBEAFE;">🛒</div>
+                <div class="hs-inf"><div class="hs-tname">Big Basket</div><div class="hs-tdate">Yesterday</div></div>
+                <div class="hs-tamt">−₹1,240</div>
+              </div>
+              <div class="hs-txn">
+                <div class="hs-ico" style="background:#DCFCE7;">🚗</div>
+                <div class="hs-inf"><div class="hs-tname">Ola Cab</div><div class="hs-tdate">Mon</div></div>
+                <div class="hs-tamt">−₹180</div>
+              </div>
+              <div class="hs-txn">
+                <div class="hs-ico" style="background:#F3E8FF;">💊</div>
+                <div class="hs-inf"><div class="hs-tname">Apollo Pharmacy</div><div class="hs-tdate">Mon</div></div>
+                <div class="hs-tamt">−₹560</div>
+              </div>
+              <div class="hs-txn">
+                <div class="hs-ico" style="background:#FEE2E2;">⚡</div>
+                <div class="hs-inf"><div class="hs-tname">Electricity Bill</div><div class="hs-tdate">Sun</div></div>
+                <div class="hs-tamt">−₹820</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
-  </section>
+  </div>
+</section>
 
-  <footer>
-    <div class="container">
-      © 2026 BillSnap. All rights reserved.
-      <br /><br />
-      <a href="/README.md">Privacy Policy</a>
+<!-- ── Carousel / Preview ───────────────────────────────────── -->
+<section id="preview" aria-label="App screenshots">
+  <div class="wrap">
+    <div class="prev-head rv">
+      <div class="eyebrow">App Preview</div>
+      <h2>See BillSnap in Action</h2>
+      <p>Five screens designed to make expense tracking fast and effortless.</p>
     </div>
-  </footer>
+
+    <div class="c-stage rv">
+      <div class="c-phone" role="img" aria-label="App screenshot carousel">
+        <div class="c-screen">
+
+          <!-- Screen 1: Home -->
+          <div class="app-s on" id="scr0">
+            <div class="s-top">
+              <div class="s-top-row">
+                <div><div class="s-title">Home</div><div class="s-sub">June 2026</div></div>
+                <div style="font-size:16px;">😊</div>
+              </div>
+              <div style="margin-top:10px;">
+                <div style="font-size:8px;opacity:.7;">Spent this month</div>
+                <div style="font-family:var(--f-mono);font-size:22px;font-weight:bold;color:#fff;">₹12,480</div>
+              </div>
+            </div>
+            <div class="s-body">
+              <div class="s-sec">Recent Transactions</div>
+              <div class="hs-txn"><div class="hs-ico" style="background:#FEF3C7;">🍔</div><div class="hs-inf"><div class="hs-tname">Zomato</div><div class="hs-tdate">Today</div></div><div class="hs-tamt">−₹340</div></div>
+              <div class="hs-txn"><div class="hs-ico" style="background:#DBEAFE;">🛒</div><div class="hs-inf"><div class="hs-tname">Big Basket</div><div class="hs-tdate">Yesterday</div></div><div class="hs-tamt">−₹1,240</div></div>
+              <div class="hs-txn"><div class="hs-ico" style="background:#DCFCE7;">🚗</div><div class="hs-inf"><div class="hs-tname">Ola Cab</div><div class="hs-tdate">Mon</div></div><div class="hs-tamt">−₹180</div></div>
+              <div class="hs-txn"><div class="hs-ico" style="background:#F3E8FF;">💊</div><div class="hs-inf"><div class="hs-tname">Apollo Pharmacy</div><div class="hs-tdate">Mon</div></div><div class="hs-tamt">−₹560</div></div>
+              <div class="hs-txn"><div class="hs-ico" style="background:#FEE2E2;">⚡</div><div class="hs-inf"><div class="hs-tname">Electricity</div><div class="hs-tdate">Sun</div></div><div class="hs-tamt">−₹820</div></div>
+            </div>
+          </div>
+
+          <!-- Screen 2: Add Transaction -->
+          <div class="app-s" id="scr1">
+            <div class="s-top">
+              <div class="s-top-row">
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div style="width:20px;height:20px;background:rgba(255,255,255,.18);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;">←</div>
+                  <div class="s-title">Add Transaction</div>
+                </div>
+              </div>
+            </div>
+            <div class="s-body">
+              <div class="f-lbl">Amount</div>
+              <div class="f-box f-amt">₹ 340.00</div>
+              <div class="f-lbl">Store / Merchant</div>
+              <div class="f-box">Zomato</div>
+              <div class="f-lbl">Category</div>
+              <div class="cat-row">
+                <div class="cat-chip sel">🍔 Food</div>
+                <div class="cat-chip">🛒 Grocery</div>
+                <div class="cat-chip">🚗 Travel</div>
+                <div class="cat-chip">💊 Health</div>
+              </div>
+              <div class="f-lbl">Date</div>
+              <div class="f-box">20 Jun 2026</div>
+              <div class="f-lbl">Payment</div>
+              <div class="f-box">UPI / GPay</div>
+              <div class="save-btn">Save Transaction</div>
+            </div>
+          </div>
+
+          <!-- Screen 3: Instant Transaction -->
+          <div class="app-s" id="scr2">
+            <div class="s-top">
+              <div class="s-title">⚡ Instant Add</div>
+              <div class="s-sub">Your frequent expenses</div>
+            </div>
+            <div class="s-body">
+              <div class="s-sec">Tap to record instantly</div>
+              <div class="ins-grid">
+                <div class="ins-tile"><div class="ins-ico">☕</div><div class="ins-nm">Morning Tea</div><div class="ins-amt">₹30</div></div>
+                <div class="ins-tile"><div class="ins-ico">🚌</div><div class="ins-nm">Bus Pass</div><div class="ins-amt">₹50</div></div>
+                <div class="ins-tile"><div class="ins-ico">🍱</div><div class="ins-nm">Lunch</div><div class="ins-amt">₹120</div></div>
+                <div class="ins-tile"><div class="ins-ico">⛽</div><div class="ins-nm">Petrol</div><div class="ins-amt">₹500</div></div>
+                <div class="ins-tile"><div class="ins-ico">📱</div><div class="ins-nm">Recharge</div><div class="ins-amt">₹239</div></div>
+                <div class="ins-tile" style="background:var(--ground-alt);border-color:var(--border);"><div class="ins-ico">➕</div><div class="ins-nm" style="color:var(--accent);">New</div><div class="ins-amt">Add</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 4: Analytics -->
+          <div class="app-s" id="scr3">
+            <div class="s-top">
+              <div class="s-title">📊 Analytics</div>
+              <div class="s-sub">June 2026</div>
+            </div>
+            <div class="s-body">
+              <div class="s-sec">Spending by Category</div>
+              <div class="donut-wrap">
+                <svg class="donut-svg" viewBox="0 0 100 100" aria-hidden="true">
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#E0DDFA" stroke-width="16"/>
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#4F46E5" stroke-width="16"
+                    stroke-dasharray="79 147" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#7C3AED" stroke-width="16"
+                    stroke-dasharray="54 172" stroke-dashoffset="-79" transform="rotate(-90 50 50)"/>
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#0284C7" stroke-width="16"
+                    stroke-dasharray="41 185" stroke-dashoffset="-133" transform="rotate(-90 50 50)"/>
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#10B981" stroke-width="16"
+                    stroke-dasharray="33 193" stroke-dashoffset="-174" transform="rotate(-90 50 50)"/>
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#F59E0B" stroke-width="16"
+                    stroke-dasharray="19 207" stroke-dashoffset="-207" transform="rotate(-90 50 50)"/>
+                  <circle cx="50" cy="50" r="26" fill="var(--ground)"/>
+                </svg>
+              </div>
+              <div class="leg-row"><div class="leg-dot" style="background:#4F46E5;"></div><div class="leg-nm">Food</div><div class="leg-amt">₹3,200</div></div>
+              <div class="leg-row"><div class="leg-dot" style="background:#7C3AED;"></div><div class="leg-nm">Grocery</div><div class="leg-amt">₹2,400</div></div>
+              <div class="leg-row"><div class="leg-dot" style="background:#0284C7;"></div><div class="leg-nm">Transport</div><div class="leg-amt">₹1,800</div></div>
+              <div class="leg-row"><div class="leg-dot" style="background:#10B981;"></div><div class="leg-nm">Health</div><div class="leg-amt">₹1,480</div></div>
+              <div class="leg-row"><div class="leg-dot" style="background:#F59E0B;"></div><div class="leg-nm">Other</div><div class="leg-amt">₹3,600</div></div>
+            </div>
+          </div>
+
+          <!-- Screen 5: Budget -->
+          <div class="app-s" id="scr4">
+            <div class="s-top">
+              <div class="s-title">🎯 Budget</div>
+              <div class="s-sub">Monthly limits — June 2026</div>
+            </div>
+            <div class="s-body">
+              <div class="s-sec">Category Limits</div>
+              <div class="bud-item"><div class="bud-row"><div class="bud-cat">🍔 Food</div><div class="bud-num">₹3,200 / ₹4,000</div></div><div class="bud-track"><div class="bud-fill" style="width:80%;background:#4F46E5;"></div></div></div>
+              <div class="bud-item"><div class="bud-row"><div class="bud-cat">🛒 Grocery</div><div class="bud-num">₹2,400 / ₹3,000</div></div><div class="bud-track"><div class="bud-fill" style="width:80%;background:#7C3AED;"></div></div></div>
+              <div class="bud-item"><div class="bud-row"><div class="bud-cat">🚗 Transport</div><div class="bud-num">₹1,800 / ₹2,000</div></div><div class="bud-track"><div class="bud-fill" style="width:90%;background:#F59E0B;"></div></div></div>
+              <div class="bud-item"><div class="bud-row"><div class="bud-cat">💊 Health</div><div class="bud-num">₹800 / ₹2,500</div></div><div class="bud-track"><div class="bud-fill" style="width:32%;background:#10B981;"></div></div></div>
+              <div class="bud-item"><div class="bud-row"><div class="bud-cat">🎬 Entertainment</div><div class="bud-num">₹1,200 / ₹1,000</div></div><div class="bud-track"><div class="bud-fill" style="width:100%;background:#EF4444;"></div></div></div>
+              <div style="font-size:8px;color:#EF4444;font-weight:600;margin-top:2px;">⚠ Entertainment over budget</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="c-label" id="cLabel">Home Screen</div>
+
+      <div class="c-dots" role="tablist" aria-label="Select app screen">
+        <button class="c-dot on" onclick="goSlide(0)" role="tab" aria-selected="true"  aria-label="Home Screen"></button>
+        <button class="c-dot"    onclick="goSlide(1)" role="tab" aria-selected="false" aria-label="Add Transaction"></button>
+        <button class="c-dot"    onclick="goSlide(2)" role="tab" aria-selected="false" aria-label="Instant Transaction"></button>
+        <button class="c-dot"    onclick="goSlide(3)" role="tab" aria-selected="false" aria-label="Analytics"></button>
+        <button class="c-dot"    onclick="goSlide(4)" role="tab" aria-selected="false" aria-label="Budget"></button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Features Bento ───────────────────────────────────────── -->
+<section id="features" aria-label="App features">
+  <div class="wrap">
+    <div class="feat-head rv">
+      <div class="eyebrow">Features</div>
+      <h2>Built around how you<br />actually spend</h2>
+      <p>Six tools that cover every part of your daily financial life, no spreadsheet required.</p>
+    </div>
+
+    <div class="bento">
+
+      <!-- b1: Receipt — wide -->
+      <div class="bc b1 rv">
+        <div class="bc-ico">📸</div>
+        <h3 class="bc-title">Receipt Import</h3>
+        <p class="bc-desc">Take a photo of any bill or payment screenshot. AI reads the merchant, amount, and date — so you don't have to type anything.</p>
+        <div class="rtags">
+          <div class="rtag">🍔 Zomato −₹340</div>
+          <div class="rtag">🛒 Big Basket −₹1,240</div>
+          <div class="rtag">⛽ Petrol −₹500</div>
+          <div class="rtag">💊 Apollo −₹560</div>
+        </div>
+      </div>
+
+      <!-- b2: Analytics — tall dark -->
+      <div class="bc b2 rv">
+        <div class="bc-ico">📊</div>
+        <h3 class="bc-title">Smart Analytics</h3>
+        <p class="bc-desc">Category breakdowns, monthly trends, and payment method splits — all generated automatically from your transactions.</p>
+        <div class="bento-donut">
+          <canvas id="bentodonut" width="110" height="110" aria-label="Spending breakdown chart"></canvas>
+        </div>
+      </div>
+
+      <!-- b3: Instant -->
+      <div class="bc b3 rv">
+        <div class="bc-ico">⚡</div>
+        <h3 class="bc-title">Instant Transactions</h3>
+        <p class="bc-desc">Save your most frequent expenses as tiles — morning chai, bus ticket, petrol. One tap to record.</p>
+      </div>
+
+      <!-- b4: Budget -->
+      <div class="bc b4 rv">
+        <div class="bc-ico">🎯</div>
+        <h3 class="bc-title">Budget Management</h3>
+        <p class="bc-desc">Set monthly limits per category. BillSnap tracks how close you are and alerts you before you overspend.</p>
+      </div>
+
+      <!-- b5: Monthly — wide -->
+      <div class="bc b5 rv">
+        <div class="bc-ico">📅</div>
+        <h3 class="bc-title">Monthly Tracking</h3>
+        <p class="bc-desc">Every transaction grouped by month. Filter by category, search by merchant, and compare spending across months — all in one view.</p>
+      </div>
+
+      <!-- b6: Reminders -->
+      <div class="bc b6 rv">
+        <div class="bc-ico">🔔</div>
+        <h3 class="bc-title">Smart Reminders</h3>
+        <p class="bc-desc">Set alerts for recurring bills, budget reviews, and monthly targets so nothing slips past.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Why BillSnap ─────────────────────────────────────────── -->
+<section id="why" aria-label="Why choose BillSnap">
+  <div class="wrap">
+    <div class="why-grid">
+
+      <div class="why-left">
+        <div class="eyebrow rv">Why BillSnap</div>
+        <h2 class="rv">No cloud. No login.<br /><span class="grad-text">No noise.</span></h2>
+        <p class="why-sub rv">BillSnap is built for people who want to track what they spend without handing their data to a server or learning a new system.</p>
+
+        <div class="why-list">
+          <div class="why-item rv">
+            <div class="why-ck" aria-hidden="true">✓</div>
+            <div><div class="why-t">Easy to Use</div><div class="why-d">Anyone can start tracking in under two minutes — no onboarding flow, no settings maze.</div></div>
+          </div>
+          <div class="why-item rv">
+            <div class="why-ck" aria-hidden="true">✓</div>
+            <div><div class="why-t">Fast Expense Entry</div><div class="why-d">Instant templates and AI receipt scanning mean most transactions take one or two taps.</div></div>
+          </div>
+          <div class="why-item rv">
+            <div class="why-ck" aria-hidden="true">✓</div>
+            <div><div class="why-t">Offline Support</div><div class="why-d">Works without a connection. Your data lives on your device — period.</div></div>
+          </div>
+          <div class="why-item rv">
+            <div class="why-ck" aria-hidden="true">✓</div>
+            <div><div class="why-t">Smart Reports</div><div class="why-d">Monthly summaries with category breakdowns generated without you doing anything extra.</div></div>
+          </div>
+          <div class="why-item rv">
+            <div class="why-ck" aria-hidden="true">✓</div>
+            <div><div class="why-t">Secure Local Storage</div><div class="why-d">Nothing leaves your phone. No account, no sync, no privacy trade-off.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stacked card visual -->
+      <div class="rv">
+        <div class="stk" role="img" aria-label="Sample spending cards">
+          <div class="scard scard-1">
+            <div class="sc-lbl">Monthly Overview</div>
+            <div class="sc-amt">₹12,480</div>
+            <div class="sc-sub">Spent in June 2026</div>
+          </div>
+          <div class="scard scard-2">
+            <div class="sc-lbl">Budget Status</div>
+            <div class="sc-bars">
+              <div class="sc-brow"><div class="sc-blbl">Food</div><div class="sc-btrk"><div class="sc-bfil" style="width:80%;background:#4F46E5;"></div></div></div>
+              <div class="sc-brow"><div class="sc-blbl">Transport</div><div class="sc-btrk"><div class="sc-bfil" style="width:60%;background:#0284C7;"></div></div></div>
+              <div class="sc-brow"><div class="sc-blbl">Health</div><div class="sc-btrk"><div class="sc-bfil" style="width:32%;background:#10B981;"></div></div></div>
+            </div>
+          </div>
+          <div class="scard scard-3">
+            <div class="sc-lbl">Top Category</div>
+            <div style="font-size:22px;margin:4px 0;">🍔 Food</div>
+            <div class="sc-sub">₹3,200 this month</div>
+            <div class="sc-bars" style="margin-top:10px;">
+              <div class="sc-brow"><div class="sc-btrk"><div class="sc-bfil" style="width:75%;background:linear-gradient(90deg,#4F46E5,#7C3AED);"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Download CTA ─────────────────────────────────────────── -->
+<section id="dl" aria-label="Download BillSnap">
+  <div class="wrap" style="position:relative;">
+    <h2>Download BillSnap <span class="warm">today.</span><br />It's free.</h2>
+    <p class="dl-sub">No sign-up. No subscription. Starts working the moment you open it.</p>
+
+    <a href="https://play.google.com/store/apps/details?id=com.cameounix.billsnap"
+       target="_blank" rel="noopener" class="play-badge" role="button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
+        <polygon points="2,1 2,12 12.5,12" fill="#4285F4"/>
+        <polygon points="2,1 22,12 12.5,12" fill="#34A853"/>
+        <polygon points="12.5,12 22,12 2,23" fill="#FBBC04"/>
+        <polygon points="2,12 12.5,12 2,23" fill="#EA4335"/>
+      </svg>
+      <div>
+        <span class="pb-sub">Get it on</span>
+        <span class="pb-main">Google Play</span>
+      </div>
+    </a>
+
+    <span class="dl-note">Free · Android · Works offline · No account needed</span>
+  </div>
+</section>
+
+<!-- ── Footer ───────────────────────────────────────────────── -->
+<footer>
+  <div class="wrap">
+    <div class="ft-grid">
+
+      <div class="ft-brand">
+        <div class="logo">
+          <img src="app_icon.png" alt="BillSnap" width="38" height="38" style="border-radius:10px;" />
+          <div>
+            <div class="logo-name">BillSnap</div>
+            <div class="logo-sub">Money Expense Tracker</div>
+          </div>
+        </div>
+        <p>Track expenses, analyze your spending, and stay in control — completely offline, completely private.</p>
+        <p class="dev">Developed by <strong>Cameo Unix</strong></p>
+      </div>
+
+      <div class="ft-col">
+        <h4>App</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#preview">Screenshots</a></li>
+          <li><a href="#why">Why BillSnap</a></li>
+          <li><a href="https://play.google.com/store/apps/details?id=com.cameounix.billsnap" target="_blank" rel="noopener">Download</a></li>
+        </ul>
+      </div>
+
+      <div class="ft-col">
+        <h4>Legal &amp; Support</h4>
+        <ul>
+          <li><a href="README.md">Privacy Policy</a></li>
+          <li><a href="TERMS.md">Terms of Service</a></li>
+          <li><a href="mailto:support@cameounix.com">Contact</a></li>
+          <li><a href="https://play.google.com/store/apps/details?id=com.cameounix.billsnap" target="_blank" rel="noopener">Feedback</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="ft-bottom">
+      <p>© 2026 Cameo Unix. All rights reserved.</p>
+      <p style="color:rgba(255,255,255,.3);">BillSnap — Money Expense Tracker</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Header raise on scroll ─────────────────────────────── */
+const hdr = document.getElementById('hdr');
+window.addEventListener('scroll', () => {
+  hdr.classList.toggle('raised', window.scrollY > 8);
+}, { passive: true });
+
+/* ── Mobile nav ─────────────────────────────────────────── */
+function toggleMnav() {
+  const m = document.getElementById('mnav');
+  const open = m.classList.toggle('open');
+  document.querySelector('.burger').setAttribute('aria-expanded', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+
+/* ── Scroll reveal ──────────────────────────────────────── */
+const rvEls = document.querySelectorAll('.rv');
+if ('IntersectionObserver' in window) {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('vis'), i * 70);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.10 });
+  rvEls.forEach(el => obs.observe(el));
+} else {
+  rvEls.forEach(el => el.classList.add('vis'));
+}
+
+/* ── Carousel ───────────────────────────────────────────── */
+const LABELS = ['Home Screen','Add Transaction','Instant Transaction','Analytics','Budget Screen'];
+const screens = Array.from({ length: 5 }, (_, i) => document.getElementById('scr' + i));
+const dots    = document.querySelectorAll('.c-dot');
+const label   = document.getElementById('cLabel');
+let cur = 0, timer;
+
+function goSlide(n) {
+  screens[cur].classList.remove('on');
+  dots[cur].classList.remove('on');
+  dots[cur].setAttribute('aria-selected', 'false');
+  cur = n;
+  screens[cur].classList.add('on');
+  dots[cur].classList.add('on');
+  dots[cur].setAttribute('aria-selected', 'true');
+  label.textContent = LABELS[cur];
+  clearInterval(timer);
+  timer = setInterval(() => goSlide((cur + 1) % 5), 3000);
+}
+
+timer = setInterval(() => goSlide((cur + 1) % 5), 3000);
+
+/* ── Bento analytics donut (Canvas) ────────────────────── */
+function drawDonut() {
+  const cv = document.getElementById('bentodonut');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const cx = 55, cy = 55, r = 38, w = 18;
+  const slices = [
+    { pct: 0.257, color: '#4F46E5' },
+    { pct: 0.193, color: '#7C3AED' },
+    { pct: 0.145, color: '#0284C7' },
+    { pct: 0.119, color: '#10B981' },
+    { pct: 0.286, color: 'rgba(255,255,255,0.22)' },
+  ];
+  let angle = -Math.PI / 2;
+  slices.forEach(s => {
+    const end = angle + s.pct * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, angle, end);
+    ctx.arc(cx, cy, r - w, end, angle, true);
+    ctx.closePath();
+    ctx.fillStyle = s.color;
+    ctx.fill();
+    angle = end;
+  });
+  /* Center hole */
+  ctx.beginPath();
+  ctx.arc(cx, cy, r - w - 3, 0, Math.PI * 2);
+  ctx.fillStyle = '#1A1744';
+  ctx.fill();
+  /* Center label */
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = 'bold 11px ' + getComputedStyle(document.body).fontFamily;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('₹12.5k', cx, cy);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', drawDonut);
+} else {
+  drawDonut();
+}
+</script>
 
 </body>
 </html>
